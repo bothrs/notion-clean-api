@@ -1,23 +1,5 @@
 const { Client } = require("@notionhq/client");
-import Cors from "cors";
-
-const cors = Cors({
-  methods: ["GET", "HEAD"],
-});
-
-// Helper method to wait for a middleware to execute before continuing
-// And to throw an error when an error happens in a middleware
-function runMiddleware(req, res, fn) {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-
-      return resolve(result);
-    });
-  });
-}
+import NextCors from "nextjs-cors";
 
 const getValue = (row) => {
   switch (row.type) {
@@ -62,7 +44,12 @@ export const getDatabase = async (auth: string, database_id: string) => {
 };
 
 export default async function handler(req, res) {
-  await runMiddleware(req, res, cors);
+  await NextCors(req, res, {
+    // Options
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    origin: "*",
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  });
   const { database_id, notion_secret } = req.query;
 
   const pages = await getDatabase(notion_secret, database_id);
