@@ -37,7 +37,9 @@ export const getDatabase = async (auth: string, database_id: string) => {
     database_id,
   });
 
-  return formatResponse(response);
+  return {
+    records: formatResponse(response),
+  };
 };
 
 export default async function handler(req: any, res: any) {
