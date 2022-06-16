@@ -1,6 +1,25 @@
 const { Client } = require("@notionhq/client");
+import Cors from "cors";
 
-const getValue = (row: any) => {
+const cors = Cors({
+  methods: ["GET", "HEAD"],
+});
+
+// Helper method to wait for a middleware to execute before continuing
+// And to throw an error when an error happens in a middleware
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+
+      return resolve(result);
+    });
+  });
+}
+
+const getValue = (row) => {
   switch (row.type) {
     case "rich_text":
       return row.rich_text?.[0].text.content;
@@ -13,8 +32,8 @@ const getValue = (row: any) => {
   }
 };
 
-const formatResponse = (response: any) => {
-  const formattedResponse = response.results.map((row: any) => {
+const formatResponse = (response) => {
+  const formattedResponse = response.results.map((row) => {
     let formattedRow = {};
     Object.keys(row.properties).forEach((columnName) => {
       formattedRow = {
@@ -42,7 +61,8 @@ export const getDatabase = async (auth: string, database_id: string) => {
   };
 };
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
+  await runMiddleware(req, res, cors);
   const { database_id, notion_secret } = req.query;
 
   const pages = await getDatabase(notion_secret, database_id);
