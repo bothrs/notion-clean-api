@@ -1,11 +1,9 @@
-/** @type {import('next').NextConfig} */
-
-module.exports = module.exports = {
-  async rewrites() {
+module.exports = {
+  async headers() {
     return [
       {
-        source: "/api/:path*",
-        destination: "https://api.example.com/:path*",
+        source: "/_next/:path*",
+        headers: [{ key: "Access-Control-Allow-Origin", value: "*" }],
       },
     ];
   },
