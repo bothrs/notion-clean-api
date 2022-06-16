@@ -28,20 +28,24 @@ const formatResponse = (response: any) => {
   return formattedResponse;
 };
 
-export const getDatabase = async () => {
+export const getDatabase = async (auth: string, database_id: string) => {
   const notion = new Client({
-    auth: "TO DO: GET FROM REQUEST",
+    auth,
   });
 
   const response = await notion.databases.query({
-    database_id: "TO DO: GET FROM REQUEST",
+    database_id,
   });
 
   return formatResponse(response);
 };
 
 export default async function handler(req: any, res: any) {
-  const pages = await getDatabase();
+  const { database_id } = req.query;
+  const { auth } = req.headers;
+
+  console.log(auth, database_id);
+  const pages = await getDatabase(auth, database_id);
 
   res.status(200).json(pages);
 }
