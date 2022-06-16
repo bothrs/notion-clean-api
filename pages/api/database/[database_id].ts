@@ -42,10 +42,10 @@ export const getDatabase = async (auth: string, database_id: string) => {
 
 export default async function handler(req: any, res: any) {
   const { database_id } = req.query;
-  const { auth } = req.headers;
+  const { notion_secret } = req.headers;
 
-  console.log(auth, database_id);
-  const pages = await getDatabase(auth, database_id);
+  console.log(notion_secret, database_id);
+  const pages = await getDatabase(notion_secret, database_id);
 
   res.status(200).json(pages);
 }
